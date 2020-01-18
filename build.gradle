@@ -16,9 +16,9 @@ task buildDockerfile(type: Dockerfile) {
     from 'python:latest'
     copyFile 'requirements.txt', './'
     runCommand 'pip install -r requirements.txt'
-    copyFile('app.py', '/app.py')
+    copyFile('Main.py', '/Main.py')
     exposePort 80
-	instruction('CMD python /app.py')
+	instruction('CMD python /Main.py')
 }
 
 // Use task types
