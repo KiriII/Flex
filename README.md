@@ -17,3 +17,14 @@ Run:
 
 
 ☻ gradle startService
+
+
+Errors:
+
+☻ No date:
+    ☺ Example: http://localhost/?map=2019
+     {"errorCode": 27, "dataMessage": "There is no date"}
+     
+☻ Error in date format:
+    ☺ Example: http://localhost/?year=999 or http://localhost/?year=14888
+    {"errorCode": 54, "dataMessage": "error in date format"}
