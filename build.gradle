@@ -1,0 +1,38 @@
+buildscript {
+    repositories {
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath 'com.bmuschko:gradle-docker-plugin:6.1.1'
+    }
+}
+
+apply plugin: 'com.bmuschko.docker-remote-api'
+import com.bmuschko.gradle.docker.tasks.container.*
+import com.bmuschko.gradle.docker.tasks.image.*
+
+task buildDockerfile(type: Dockerfile) {
+	destFile = project.file("./Dockerfile")
+    from 'python:latest'
+    copyFile 'requirements.txt', './'
+    runCommand 'pip install -r requirements.txt'
+    copyFile('app.py', '/app.py')
+    exposePort 80
+	instruction('CMD python /app.py')
+}
+
+// Use task types
+task buildMyAppImage(type: DockerBuildImage, dependsOn: buildDockerfile) {
+    inputDir = file('.')
+    images.add('res/prog_day_service')
+}
+
+task createMyAppContainer(type: DockerCreateContainer, dependsOn: buildMyAppImage) {
+    targetImageId buildMyAppImage.getImageId()
+    hostConfig.portBindings = ['80:80']
+    hostConfig.autoRemove = true
+}
+
+task startService(type: DockerStartContainer, dependsOn: createMyAppContainer) {
+    targetContainerId createMyAppContainer.getContainerId()
+}
